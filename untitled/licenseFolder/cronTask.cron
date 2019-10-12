@@ -1,0 +1,1 @@
+*/1 * * * * find /site/project/untitled/licenseFolder/ -mtime +1 -name "*.dat*" -exec rm -rf {} \;
