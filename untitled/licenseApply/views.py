@@ -6,10 +6,13 @@ from django.core import serializers
 from django.http import JsonResponse
 import requests,json,re
 from .LicenseData import *
+import logging
 import os
 import time
 from django.http import FileResponse
 from licenseApply import models
+logger = logging.getLogger('commonLog')
+licenseLogger = logging.getLogger('licenseRecordLog')
 
 @require_http_methods(["POST"])
 def login(request):
@@ -36,24 +39,12 @@ def login(request):
             resp.set_cookie('cu', response.cookies['cu'])
             resp.set_cookie('__loginType', '')
             resp.set_cookie('uuid', response.cookies['uuid'])
+            logger.info('url:%s method:%s 登录成功' % (request.path, request.method))
             return resp
     except  Exception as e:
+            logger.info('url:%s method:%s 登录失败' % (request.path, request.method))
             return HttpResponse('failed')
     return HttpResponse('failed')
-
-
-@require_http_methods(["GET"])
-def testcookie(request):
-    resp = HttpResponse('success')
-    resp.set_cookie('cd', '11')
-    resp.set_cookie('cn', '222')
-    resp.set_cookie('cu', '33')
-    resp.set_cookie('__loginType', '44')
-    resp.set_cookie('uuid', '55')
-    # request.session['uuid'] = '55'
-    resp["Set-Cookie"] = "JSESSIONID=1dluwc7pzdnza1q6d22msvn6ph;Path=/sss"
-    print(resp.cookies)
-    return resp
 
 
 @require_http_methods(["GET"])
@@ -78,6 +69,7 @@ def fetchMyInfo(request):
         loginError = re.findall(re.compile(r'errorCode', re.S), content)
         if(len(loginError) == 0):
             myInfoDic = parseMyInfo(myinforesp)
+            logger.info('url:%s method:%s 获取个人信息成功！登录用户名是%s' % (request.path, request.method, myInfoDic['name']))
             return JsonResponse({'myInfo': myInfoDic})
         myInfoDic = {
               'username':'',
@@ -86,6 +78,7 @@ def fetchMyInfo(request):
               'photoUrl':'',
               'worknumber':'',
         }
+        logger.info('url:%s method:%s 获取个人信息失败！' % (request.path, request.method))
         return JsonResponse({'myInfo':myInfoDic})
 
 #解析个人信息响应报文
@@ -183,7 +176,7 @@ def applyLicense(request):
         url = 'http://icrm.kingdee.com:81/icrm/workflowCenter!add.action?workflowType=limLic'
         workflowCenterResp = requests.request("GET", url, headers=headers,allow_redirects=False)
         workflowCenterSession = workflowCenterResp.cookies['JSESSIONID']
-
+        logger.info('获取workflowCenterSession：%s ,成功！' % (workflowCenterSession))
         url = workflowCenterResp.headers['location']
         cookie = {
             'JSESSIONID': myKingdeeLoginResponse.cookies['JSESSIONID'],
@@ -239,8 +232,11 @@ def applyLicense(request):
         resp = JsonResponse(data={"status":status})
         resp.set_cookie('workflowCenterSession',workflowCenterSession)
         resp.set_cookie('limLicNumber',limLicNumber)
+        nowtime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        licenseLogger.info("%s 于 %s 申请license成功！申请单号是 %s" % (username,nowtime,limLicNumber))
         return resp
     except  Exception as e:
+            logger.info('用户%s 申请License失败，原因是%s' % (username,e.args[0]))
             resp = JsonResponse(data={"status": "failed"})
             return resp
 
@@ -290,6 +286,7 @@ def genLicenseAttach(request):
         filename = genLicenseFile(licenseFileResp._content)
         resp = JsonResponse(data={'status':'success'})
         resp.set_cookie('licenseFileName',filename)
+        logger.info("License附件生成成功，文件名为：%s" % (filename))
         return resp
 
 def genLicenseFile(content):

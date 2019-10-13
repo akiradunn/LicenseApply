@@ -22,7 +22,6 @@ urlpatterns = [
     re_path(r'^login$', views.login, ),
     re_path(r'^fetchMyInfo$', views.fetchMyInfo, ),
     re_path(r'^applyLicense$', views.applyLicense, ),
-    re_path(r'^testcookie$', views.testcookie, ),
     re_path(r'^genLicenseAttach$', views.genLicenseAttach, ),
     re_path(r'^getLicenseFile$', views.getLicenseFile, ),
     re_path(r'.*', TemplateView.as_view(template_name="index.html"), ),
