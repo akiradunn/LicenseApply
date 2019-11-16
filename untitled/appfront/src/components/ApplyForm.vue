@@ -101,6 +101,7 @@
 </template>
 
 <script>
+    import appInstance from '../App.vue';
     export default {
         name: "ApplyForm",
         data () {
@@ -131,7 +132,7 @@
               background: 'rgba(0, 0, 0, 0.7)'
             });
             // `this` 在方法里指向当前 Vue 实例
-            var url = "http://www.easlicense.tk:80/applyLicense";
+            var url = appInstance.projectConfg.baseUrl+"/applyLicense";
             var postdata = {
               "version": this.version,
               "serverSpecialCode": this.serverSpecialCode,
@@ -159,7 +160,7 @@
             });
           },
           fetchMyInfo: function(event){
-            var url = "http://www.easlicense.tk:80/fetchMyInfo";
+            var url = appInstance.projectConfg.baseUrl+"/fetchMyInfo";
             this.$http.get(url,).then((response) => {
               var myInfo = response.body.myInfo
               this.name = myInfo.name

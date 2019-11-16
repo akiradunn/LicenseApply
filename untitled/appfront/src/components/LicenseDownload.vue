@@ -7,6 +7,7 @@
 </template>
 
 <script>
+    import appInstance from '../App.vue';
     export default {
         name: "LicenseDownload",
         data () {
@@ -31,7 +32,7 @@
               background: 'rgba(0, 0, 0, 0.7)'
             });
             // `this` 在方法里指向当前 Vue 实例
-            var url = "http://www.easlicense.tk:80/genLicenseAttach";
+            var url = appInstance.projectConfg.baseUrl+"/genLicenseAttach";
             this.$http.get(url).then((response) => {
               if (response.body.status == "success") {
                 this.isGenerateLicenseFile = true;
@@ -48,7 +49,7 @@
           downLoad:function (event) {
             //document.cookie.split(";")[6].split("=")[1];
             if(this.isGenerateLicenseFile){
-              window.open("http://www.easlicense.tk:80/getLicenseFile",'_blank');
+              window.open(appInstance.projectConfg.baseUrl+"/getLicenseFile",'_blank');
             }else{
               this.$message({
                           message: 'License附件还未生成，请耐心等候！',

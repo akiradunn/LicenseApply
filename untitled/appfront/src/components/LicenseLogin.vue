@@ -19,6 +19,7 @@
 </template>
 
 <script>
+  import appInstance from '../App.vue'
   export default {
     name: "LicenseLogin",
      data () {
@@ -30,7 +31,7 @@
   },
   methods: {
     login(){
-         var url = "http://www.easlicense.tk:80/login";
+         var url = appInstance.projectConfg.baseUrl+"/login";
             var postdata = {"email": this.email, "password": this.password};
             this.$http.post(url,postdata,{emulateJSON:true}).then((res) =>{
                  if(res.data == "success"){
@@ -51,7 +52,7 @@
           });
         },
     testcookie(){
-      var url = "http://www.easlicense.tk:80/testcookie";
+      var url = appInstance.projectConfg.baseUrl+"/testcookie";
       this.$axios.get(url).then((res)=>{
                  if(res.body == "success"){
                        this.$message({

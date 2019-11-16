@@ -7,8 +7,10 @@
 
 
 <script>
+const projectConfig = require('../static/config.json');
 export default {
-  name: 'App'
+  name: 'App',
+  projectConfg:projectConfig
 }
 </script>
 
