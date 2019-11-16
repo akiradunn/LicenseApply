@@ -13,9 +13,9 @@ else
     cd ../
     echo "---start move appfront---"
     mv appfront/ untitled/
-    cd /usr/local/nginx/sbin/
     echo "---start reload nginx---"
-    ./nginx -s reload
+    systemctl restart nginx
+	echo "---end reload nginx---"
     cd /site/project/untitled/
     echo "---start activate virtualenv---"
     source /site/project/untitled/centosenv/bin/activate
